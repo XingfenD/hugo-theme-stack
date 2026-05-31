@@ -1,0 +1,85 @@
+/* ===== Friend Links Page ===== */
+
+.links-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+
+    @include respond(md) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.links-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--card-background);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--shadow-l1);
+    text-decoration: none;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+        box-shadow: var(--shadow-l2);
+        transform: translateY(-2px);
+    }
+}
+
+.links-card-image {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--body-background);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.links-card-body {
+    min-width: 0;
+}
+
+.links-card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--card-text-color-main);
+}
+
+.links-card-desc {
+    font-size: 1.3rem;
+    color: var(--card-text-color-secondary);
+    margin: 4px 0;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.links-card-url {
+    font-size: 1.2rem;
+    color: var(--card-text-color-tertiary);
+}
+
+.page-header {
+    margin-bottom: 32px;
+
+    .page-title {
+        font-size: 2.8rem;
+        margin: 0 0 8px;
+        color: var(--card-text-color-main);
+    }
+
+    .page-description {
+        color: var(--card-text-color-secondary);
+        font-size: 1.5rem;
+        line-height: 1.7;
+    }
+}

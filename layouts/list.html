@@ -1,4 +1,23 @@
 {{ define "main" }}
+    {{- $pages := partial "helper/pages.html" . -}}
+    {{- $subsections := .Sections -}}
+
+    {{- if and (eq (len $pages) (len $subsections)) (eq $pages $subsections) -}}
+        {{- $subsections = slice -}}
+    {{- end -}}
+
+    {{/* Filter out subsections with no visible pages */}}
+    {{- $filteredSubsections := slice -}}
+    {{- range $subsections -}}
+        {{- if gt (len (where .Pages ".Params.hidden" "!=" true)) 0 -}}
+            {{- $filteredSubsections = $filteredSubsections | append . -}}
+        {{- end -}}
+    {{- end -}}
+    {{- $subsections = $filteredSubsections -}}
+
+    {{/* Count only visible (non-hidden) pages */}}
+    {{- $visiblePages := where $pages ".Params.hidden" "!=" true -}}
+
     <header>
         <h3 class="section-title">
             {{ if eq .Parent (.GetPage "/") }}
@@ -10,17 +29,17 @@
 
         <div class="section-card">
             <div class="section-details">
-                <h3 class="section-count">{{ T "list.page" (len .Pages) }}</h3>
+                <h3 class="section-count">{{ T "list.page" (len $visiblePages) }}</h3>
                 <h1 class="section-term">{{ .Title }}</h1>
                 {{ with .Params.description }}
                     <h2 class="section-description">{{ . }}</h2>
                 {{ end }}
             </div>
-    
+
             {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
             {{ if $image }}
                 <div class="section-image">
-                    {{ partial "helper/thumbnail-image" (dict 
+                    {{ partial "helper/thumbnail-image" (dict
                         "Resource" $image.Resource
                         "Width" 60
                         "Height" 60
@@ -37,13 +56,6 @@
             {{ end }}
         </div>
     </header>
-
-    {{- $pages := partial "helper/pages.html" . -}}
-    {{- $subsections := .Sections -}}
-    
-    {{- if and (eq (len $pages) (len $subsections)) (eq $pages $subsections) -}}
-        {{- $subsections = slice -}}
-    {{- end -}}
 
     {{- with $subsections -}}
         <aside>

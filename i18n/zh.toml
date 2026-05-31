@@ -39,6 +39,9 @@ darkMode   = "暗色模式"
     [widget.categoriesCloud]
         title = "分类"
 
+    [widget.curTags]
+        title = "当前标签"
+
 [search]
     title       = "搜索"
     placeholder = "输入关键词..."

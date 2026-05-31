@@ -6,16 +6,28 @@ rssFullContent = true
 SortBy         = "default"
 
 [footer]
-    since      = 2026
-    customText = ""
+    since      = 2025
+    customText = "星藏点雪，月隐晦明"
 
 [dateFormat]
-    published   = ":date_full"
-    lastUpdated = ":date_full"
+    published   = "Jan 02, 2006"
+    lastUpdated = "Jan 02, 2006 15:04 MST"
 
 [sidebar]
-    compact = false
-    avatar  = ""
+    compact  = false
+    emoji    = "🥹"
+    subtitle = "挽星."
+    avatar   = "img/avatar.png"
+
+[archives]
+    showCategories  = true
+    showCollections = true
+    showTags        = true
+    showTimeline    = true
+
+[entrance]
+    tagline = "星藏点雪，月隐晦明。"
+    hint    = "轻触任意处进入"
 
 [article]
     headingAnchor = false
@@ -63,8 +75,15 @@ SortBy         = "default"
         caution   = "🚨"
 
 [widgets]
-    homepage = []
-    page     = []
+    homepage = [
+        { type = "search" },
+        { type = "archives" },
+        { type = "categories", params = { limit = 10 } },
+        { type = "tag-cloud", params = { limit = 10 } }
+    ]
+    page     = [
+        { type = "toc" }
+    ]
 
 [opengraph.twitter]
     site = ""
@@ -99,7 +118,7 @@ SortBy         = "default"
 
 [comments]
     enabled  = true
-    provider = "disqus"
+    provider = "giscus"
 
     [comments.artalk]
         serverUrl = ""
@@ -163,17 +182,17 @@ SortBy         = "default"
         siteName             = ""  # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
 
     [comments.giscus]
-        repo             = ""
-        repoID           = ""
-        category         = ""
-        categoryID       = ""
-        mapping          = "title"
+        repo             = "XingfenD/blog-by-hugo"
+        repoID           = "R_kgDONtUPdg"
+        category         = "Announcements"
+        categoryID       = "DIC_kwDONtUPds4C9w17"
+        mapping          = "pathname"
         lightTheme       = "light"
         darkTheme        = "dark_dimmed"
         reactionsEnabled = 1
         emitMetadata     = 0
         inputPosition    = "top"
-        lang             = "en"
+        lang             = "zh-CN"
         strict           = 0
         loading          = "lazy"
 

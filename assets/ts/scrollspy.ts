@@ -120,7 +120,7 @@ function setupScrollspy() {
     }
 
     window.addEventListener("scroll", debounced(scrollHandler));
-    
+
     // Resizing may cause the offset values to change: recompute them.
     function resizeHandler() {
         sectionsOffsets = computeOffsets(headers);
@@ -135,6 +135,15 @@ function setupScrollspy() {
     }
 
     window.addEventListener("resize", debounced(resizeHandler));
+
+    // Listen for toc:refresh event (e.g. from password gate unlock) to recompute offsets
+    document.addEventListener("toc:refresh", debounced(() => {
+        headers = document.querySelectorAll(headersQuery);
+        if (headers) {
+            sectionsOffsets = computeOffsets(headers);
+            scrollHandler();
+        }
+    }));
 }
 
 export { setupScrollspy };

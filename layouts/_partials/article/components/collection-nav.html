@@ -1,0 +1,53 @@
+{{- $collections := .GetTerms "collections" -}}
+{{- if $collections -}}
+    {{- $firstCollection := index $collections 0 -}}{{/* 仅第一个 collection 显示导航，避免多 collection 时导航混乱 */}}
+    {{- $pages := where $firstCollection.Pages ".Params.hidden" "!=" true -}}
+    {{- if gt (len $pages) 1 -}}
+        {{- $sorted := sort $pages "Date" "asc" -}}
+        {{- $current := . -}}
+        {{- $prev := false -}}
+        {{- $next := false -}}
+        {{- range $i, $p := $sorted -}}
+            {{- if eq $p.RelPermalink $current.RelPermalink -}}
+                {{- if gt $i 0 -}}
+                    {{- $prev = index $sorted (sub $i 1) -}}
+                {{- end -}}
+                {{- if lt $i (sub (len $sorted) 1) -}}
+                    {{- $next = index $sorted (add $i 1) -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- if or $prev $next -}}
+        <nav class="collection-nav">
+            <div class="collection-nav-header">
+                {{ partial "helper/icon" "collection" }}
+                <span><a href="{{ $firstCollection.RelPermalink }}">{{ $firstCollection.Title }}</a> 系列导航</span>
+            </div>
+            <div class="collection-nav-links">
+                {{- if $prev -}}
+                    <a class="collection-nav-prev" href="{{ $prev.RelPermalink }}">
+                        <span class="collection-nav-arrow">&larr;</span>
+                        <span class="collection-nav-text">
+                            <span class="collection-nav-label">前一篇</span>
+                            <span class="collection-nav-title">{{ $prev.Title }}</span>
+                        </span>
+                    </a>
+                {{- else -}}
+                    <div class="collection-nav-prev collection-nav-empty"></div>
+                {{- end -}}
+                {{- if $next -}}
+                    <a class="collection-nav-next" href="{{ $next.RelPermalink }}">
+                        <span class="collection-nav-text">
+                            <span class="collection-nav-label">后一篇</span>
+                            <span class="collection-nav-title">{{ $next.Title }}</span>
+                        </span>
+                        <span class="collection-nav-arrow">&rarr;</span>
+                    </a>
+                {{- else -}}
+                    <div class="collection-nav-next collection-nav-empty"></div>
+                {{- end -}}
+            </div>
+        </nav>
+        {{- end -}}
+    {{- end -}}
+{{- end -}}

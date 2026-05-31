@@ -33,7 +33,7 @@
 */
 :root {
     --sys-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Droid Sans", "Helvetica Neue";
-    --base-font-family: "Lato", var(--sys-font-family), sans-serif;
+    --base-font-family: "Noto Serif SC", Georgia, var(--sys-font-family), serif;
     --code-font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
@@ -118,10 +118,31 @@
     --code-background-color: rgba(0, 0, 0, 0.12);
     --code-text-color: #808080;
 
+    /* Code block styling (macOS-style header) */
+    --pre-text-color: #f8f8f2;
+    --pre-background-color: #272822;
+    --code-block-border-color: rgba(52, 73, 94, 0.14);
+    --code-block-header-background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+    --code-block-header-border-color: rgba(52, 73, 94, 0.14);
+    --code-block-lang-color: rgba(52, 73, 94, 0.86);
+    --code-block-line-number-color: #8a95a4;
+    --code-block-gutter-background: rgba(148, 163, 184, 0.12);
+    --code-block-scrollbar-thumb: rgba(52, 73, 94, 0.3);
+    --code-block-scrollbar-track: rgba(148, 163, 184, 0.12);
+    --code-line-highlight-color: rgba(76, 110, 245, 0.13);
+    --code-copy-background: rgba(255, 255, 255, 0.9);
+    --code-copy-background-hover: #ffffff;
+    --code-copy-text-color: #334155;
+    --code-copy-border-color: rgba(71, 85, 105, 0.28);
+
     --table-border-color: #dadada;
     --tr-even-background-color: #efefee;
 
     --kbd-border-color: #dadada;
+
+    /* Scrollbar */
+    --scrollbar-thumb: hsl(0, 0%, 85%);
+    --scrollbar-track: var(--body-background);
 
     &[data-scheme="dark"] {
         --code-background-color: #272822;
@@ -131,6 +152,24 @@
         --tr-even-background-color: #545454;
 
         --blockquote-background-color: rgb(75 75 75);
+
+        /* Code block dark mode */
+        --code-block-border-color: rgba(148, 163, 184, 0.3);
+        --code-block-header-background: linear-gradient(180deg, #2b2d32 0%, #24262b 100%);
+        --code-block-header-border-color: rgba(148, 163, 184, 0.3);
+        --code-block-lang-color: rgba(226, 232, 240, 0.86);
+        --code-block-line-number-color: rgba(148, 163, 184, 0.86);
+        --code-block-gutter-background: rgba(15, 23, 42, 0.38);
+        --code-block-scrollbar-thumb: rgba(148, 163, 184, 0.48);
+        --code-block-scrollbar-track: rgba(15, 23, 42, 0.35);
+        --code-line-highlight-color: rgba(125, 211, 252, 0.15);
+        --code-copy-background: rgba(30, 41, 59, 0.85);
+        --code-copy-background-hover: rgba(51, 65, 85, 0.95);
+        --code-copy-text-color: rgba(248, 250, 252, 0.95);
+        --code-copy-border-color: rgba(148, 163, 184, 0.35);
+
+        --scrollbar-thumb: hsl(0, 0%, 40%);
+        --scrollbar-track: var(--body-background);
     }
 }
 

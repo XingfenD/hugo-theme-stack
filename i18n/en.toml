@@ -48,6 +48,9 @@ darkMode   = "Dark Mode"
     [widget.categoriesCloud]
         title = "Categories"
 
+    [widget.curTags]
+        title = "Tags of current blog"
+
 [search]
     title       = "Search"
     placeholder = "Type something..."

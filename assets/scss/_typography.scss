@@ -1,0 +1,148 @@
+/* ===== Typography ===== */
+
+// 1. CJK-Latin spacing
+html[lang="zh"] {
+    .article-content {
+        text-spacing-trim: space-auto;
+    }
+}
+
+// 2. Line height & paragraph spacing
+:root {
+    --article-line-height: 1.8;
+
+    @include respond(md) {
+        --article-line-height: 1.85;
+    }
+}
+
+.article-content {
+    line-height: var(--article-line-height);
+
+    > p {
+        margin: 1.5em 0 1.2em;
+    }
+
+    li {
+        line-height: 1.7;
+    }
+}
+
+// Mobile: tighten spacing
+@media (max-width: 767px) {
+    .article-content {
+        line-height: 1.6;
+
+        > p {
+            margin: 1em 0 0.8em;
+        }
+    }
+}
+
+// 3. Blockquote refinement
+.article-content blockquote {
+    border-inline-start: 3px solid var(--accent-color);
+    border-radius: 0 4px 4px 0;
+    padding: 0.8em 1.2em;
+
+    .cite {
+        display: block;
+        text-align: right;
+        font-size: 0.85em;
+        color: var(--card-text-color-secondary);
+        margin-top: 0.5em;
+
+        a {
+            text-decoration: underline;
+        }
+    }
+}
+
+// 4. Link underline animation
+.article-content a.link {
+    box-shadow: none;
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.3s ease;
+
+    &:hover {
+        background-size: 100% 1px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+// 5. Micro interactions
+html {
+    scroll-behavior: smooth;
+}
+
+::selection {
+    background: var(--accent-color);
+    color: var(--accent-color-text);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.article-content img {
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+// 6. Scroll reveal
+.article-content > p,
+.article-content > h2,
+.article-content > h3,
+.article-content > h4,
+.article-content > ul,
+.article-content > ol,
+.article-content > pre,
+.article-content > .highlight,
+.article-content > blockquote,
+.article-content > .table-wrapper,
+.article-content > figure,
+.article-content > hr {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+
+    &.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+.timeline-year {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+
+    &.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

@@ -1,6 +1,9 @@
 <article class="{{ if .Params.image }}has-image {{ end }}main-article">
     {{ partial "article/components/header" (dict "Page" . "IsList" false) }}
 
+    {{/* Collection bar — shows series membership */}}
+    {{ partial "article/components/collection-bar" . }}
+
     {{ if .Scratch.Get "TOCEnabled" }}
     <aside class="article-toc">
         <details>

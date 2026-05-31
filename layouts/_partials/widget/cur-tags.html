@@ -1,0 +1,16 @@
+{{- $context := .Context -}}
+{{ if .Context.Page.Params.Tags }}
+<section class="widget curTags">
+    <div class="widget-icon">
+        {{ partial "helper/icon" "tag" }}
+    </div>
+    <h2 class="widget-title section-title">{{ T "widget.curTags.title" }}</h2>
+    <div class="curTags-tags">
+        {{ range (.Context.Page.GetTerms "tags") }}
+            <a href="{{ .RelPermalink }}">
+                {{ .LinkTitle }}
+            </a>
+        {{ end }}
+    </div>
+</section>
+{{ end }}

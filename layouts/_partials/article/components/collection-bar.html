@@ -1,0 +1,14 @@
+{{- $collections := .GetTerms "collections" -}}
+{{- if $collections -}}
+    <div class="collection-bar">
+        {{- range $collections -}}
+            {{- $pages := where .Pages ".Params.hidden" "!=" true -}}
+            {{- if gt (len $pages) 0 -}}
+            <div class="collection-bar-item">
+                {{ partial "helper/icon" "collection" }}
+                <span>本文属于「<a href="{{ .RelPermalink }}">{{ .Title }}</a>」系列，共 {{ len $pages }} 篇</span>
+            </div>
+            {{- end -}}
+        {{- end -}}
+    </div>
+{{- end -}}

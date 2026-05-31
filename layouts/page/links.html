@@ -1,0 +1,35 @@
+{{ define "main" }}
+<header class="page-header">
+    <h1 class="page-title">{{ .Title }}</h1>
+    {{ with .Content }}
+    <div class="page-description">{{ . }}</div>
+    {{ end }}
+</header>
+
+{{ with .Params.links }}
+<div class="links-grid">
+    {{ range . }}
+    <a class="links-card" href="{{ .website }}" target="_blank" rel="noopener">
+        {{ with .image }}
+            {{ $src := . }}
+            {{ with ($.Resources.GetMatch (printf "%s" (. | safeURL))) }}
+                {{ $src = .RelPermalink }}
+            {{ end }}
+            <div class="links-card-image">
+                <img src="{{ $src }}" loading="lazy" alt="{{ $.Title }}">
+            </div>
+        {{ end }}
+        <div class="links-card-body">
+            <h2 class="links-card-title">{{ .title }}</h2>
+            {{ with .description }}
+            <p class="links-card-desc">{{ . }}</p>
+            {{ end }}
+            <span class="links-card-url">{{ (urls.Parse .website).Host }}</span>
+        </div>
+    </a>
+    {{ end }}
+</div>
+{{ end }}
+
+{{ partialCached "footer/footer" . }}
+{{ end }}

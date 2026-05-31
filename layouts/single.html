@@ -1,6 +1,6 @@
 {{ define "body-class" }}
     article-page
-    {{/* 
+    {{/*
         Enable the right sidebar if
             - Widget different from 'TOC' is enabled
             - TOC is enabled and not empty
@@ -18,19 +18,28 @@
     {{- $TOCEnabled := and (default .Site.Params.article.toc .Params.toc) $TOCWidgetEnabled -}}
     {{- $hasTOC := ge (len .TableOfContents) 100 -}}
     {{- .Scratch.Set "TOCEnabled" (and $TOCEnabled $hasTOC) -}}
-    
+
     {{- .Scratch.Set "hasWidget" (or $HasWidgetNotTOC (and $TOCEnabled $hasTOC)) -}}
 {{ end }}
 
 {{ define "main" }}
-    {{ partial "article/article.html" . }}
+    {{ if .Params.password }}
+        {{/* Password-protected article */}}
+        {{ partial "article/components/collection-bar" . }}
+        {{ partial "article/components/password-gate" . }}
+    {{ else }}
+        {{ partial "article/article.html" . }}
+    {{ end }}
+
+    {{/* Collection navigation — prev/next within series */}}
+    {{ partial "article/components/collection-nav" . }}
 
     {{ if .Params.links }}
         {{ partial "article/components/links" . }}
     {{ end }}
 
     {{ partial "article/components/related-content" . }}
-     
+
     {{ if not (eq .Params.comments false) }}
         {{ partial "comments/include" . }}
     {{ end }}
@@ -39,6 +48,19 @@
 
     {{ partialCached "article/components/photoswipe" . }}
     {{ partial "article/components/mermaid" . }}
+
+    {{/* Reading progress bar */}}
+    {{ if .Params.password }}
+    {{ else }}
+    <div id="reading-progress-bar"></div>
+    {{ end }}
+
+    {{/* Back to top button */}}
+    <button id="back-to-top" aria-label="返回顶部">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+        </svg>
+    </button>
 {{ end }}
 
 {{ define "right-sidebar" }}

@@ -1,0 +1,128 @@
+{{- if .IsHome -}}
+<div id="entrance-overlay" onclick="this.classList.add('dismiss');document.documentElement.style.overflow='';setTimeout(function(){var e=document.getElementById('entrance-overlay');if(e)e.remove()},900)">
+    <div class="entrance-stars" id="entrance-stars"></div>
+    <div class="entrance-content">
+        <h1 class="entrance-title">{{ .Site.Title }}</h1>
+        {{- with .Site.Params.entrance.tagline -}}
+        <p class="entrance-tagline">{{ . }}</p>
+        {{- end -}}
+        {{- with .Site.Params.entrance.hint | default "轻触任意处进入" -}}
+        <span class="entrance-hint">{{ . }}</span>
+        {{- end -}}
+    </div>
+</div>
+
+<style>
+#entrance-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a1a 0%, #0a0a0a 60%, #000 100%);
+    cursor: pointer;
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#entrance-overlay.dismiss {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+.entrance-stars {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.entrance-star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle var(--twinkle-dur, 2s) ease-in-out infinite;
+    animation-delay: var(--twinkle-delay, 0s);
+    opacity: 0;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+}
+
+.entrance-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: contentFadeIn 1.2s ease both;
+    pointer-events: none;
+}
+
+@keyframes contentFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.entrance-title {
+    font-family: "Noto Serif SC", Georgia, serif;
+    font-size: clamp(3.6rem, 8vw, 7.2rem);
+    font-weight: 700;
+    color: #e8e0d0;
+    margin: 0;
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 60px rgba(200, 180, 150, 0.4), 0 0 120px rgba(180, 160, 130, 0.2);
+    user-select: none;
+}
+
+.entrance-tagline {
+    font-family: "Noto Serif SC", Georgia, serif;
+    font-size: 1.4rem;
+    color: rgba(200, 190, 170, 0.6);
+    margin: 1.2rem 0 0;
+    letter-spacing: 0.2em;
+    user-select: none;
+}
+
+.entrance-hint {
+    display: inline-block;
+    margin-top: 3rem;
+    font-size: 1.2rem;
+    color: rgba(200, 190, 170, 0.35);
+    letter-spacing: 0.1em;
+    animation: hintPulse 3s ease-in-out infinite;
+    user-select: none;
+}
+
+@keyframes hintPulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.7; }
+}
+</style>
+
+<script>
+(function() {
+    if (sessionStorage.getItem('entrance-shown')) {
+        var el = document.getElementById('entrance-overlay');
+        if (el) el.remove();
+        return;
+    }
+    sessionStorage.setItem('entrance-shown', '1');
+    document.documentElement.style.overflow = 'hidden';
+
+    var container = document.getElementById('entrance-stars');
+    var starCount = 50;
+    var frag = document.createDocumentFragment();
+
+    for (var i = 0; i < starCount; i++) {
+        var star = document.createElement('div');
+        star.className = 'entrance-star';
+        var size = Math.random() * 3 + 1;
+        star.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (Math.random() * 100) + '%;top:' + (Math.random() * 100) + '%;--twinkle-dur:' + (Math.random() * 3 + 2) + 's;--twinkle-delay:' + (Math.random() * 4) + 's';
+        frag.appendChild(star);
+    }
+    container.appendChild(frag);
+})();
+</script>
+{{- end -}}
