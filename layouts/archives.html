@@ -67,7 +67,7 @@
         {{- if $hasAny }}
         <h2 class="section-title"><a href="{{ "tags/" | relURL }}">标签</a></h2>
         <div class="subsection-list">
-            <div class="article-list--tile">
+            <div class="article-list--tile tag-tiles">
                 {{ range .Pages }}
                     {{- $filteredPages := where .Pages ".Params.hidden" "!=" true -}}
                     {{ if $filteredPages }}

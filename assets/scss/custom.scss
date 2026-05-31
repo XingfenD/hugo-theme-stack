@@ -162,6 +162,20 @@
     }
 }
 
+/* Smaller tiles for tag-only entries (no images) */
+.tag-tiles article {
+    width: 160px;
+    height: 60px;
+
+    .article-details {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .article-title {
+        font-size: 1.3rem;
+    }
+}
+
 /* Prevent subsection-list negative margins from overlapping section titles */
 .template-archives .subsection-list {
     margin-bottom: 0;
