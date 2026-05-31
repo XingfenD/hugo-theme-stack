@@ -1,5 +1,6 @@
 mainSections   = ["post"]
 rssFullContent = true
+favicon        = "favicon.ico"
 # Accepted values: "default", "lastmod"
 # default = see https://gohugo.io/quick-reference/glossary/#default-sort-order
 # lastmod = sort by last modified date, in descending order
