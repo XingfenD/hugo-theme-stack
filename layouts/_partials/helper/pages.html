@@ -11,6 +11,9 @@
     {{- end -}}
 {{- end -}}
 
+{{/* Filter out hidden pages */}}
+{{- $pages = where $pages ".Params.hidden" "!=" true -}}
+
 {{- $pages := partial "helper/pages-sort.html" (dict "Pages" $pages "Context" .) -}}
 
 {{- return $pages -}}

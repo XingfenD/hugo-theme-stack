@@ -20,7 +20,11 @@
     </aside>
     {{ end }}
 
-    {{ partial "article/components/content" . }}
+    {{ if .Params.password }}
+        {{ partial "article/components/password-gate" . }}
+    {{ else }}
+        {{ partial "article/components/content" . }}
+    {{ end }}
 
     {{ partial "article/components/footer" . }}
 
