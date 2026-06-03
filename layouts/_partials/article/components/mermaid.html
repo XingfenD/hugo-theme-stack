@@ -3,13 +3,16 @@
 
 <div class="mermaid-modal" id="mermaid-modal">
     <div class="mermaid-modal-header">
-        <div class="mermaid-modal-controls">
-            <button data-zoom="-1">− Zoom Out</button>
-            <button data-zoom="0">Reset (100%)</button>
-            <button data-zoom="1">+ Zoom In</button>
-            <button data-zoom="fit">Fit to Screen</button>
+        <span class="mermaid-modal-title">Diagram</span>
+        <div class="mermaid-modal-actions">
+            <div class="mermaid-modal-controls">
+                <button data-zoom="-1" title="缩小">−</button>
+                <span class="mermaid-modal-zoom-label" id="mermaid-zoom-label">100%</span>
+                <button data-zoom="1" title="放大">+</button>
+                <button data-zoom="fit" title="适应屏幕"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            </div>
+            <button class="mermaid-modal-close" id="mermaid-modal-close" title="关闭 (Esc)">×</button>
         </div>
-        <button class="mermaid-modal-close" id="mermaid-modal-close">✕ Close (Esc)</button>
     </div>
     <div class="mermaid-modal-body" id="mermaid-modal-body">
         <div class="mermaid-modal-content" id="mermaid-modal-content"></div>

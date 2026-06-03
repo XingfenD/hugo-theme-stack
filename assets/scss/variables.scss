@@ -229,21 +229,7 @@
         --article-image-height: 250px;
     }
 
-    /* Mermaid component variables */
-    --mermaid-toolbar-btn-bg: rgba(255, 255, 255, 0.95);
-    --mermaid-toolbar-btn-text: #333;
-    --mermaid-modal-bg: rgba(0, 0, 0, 0.95);
-    --mermaid-modal-content-bg: #fff;
-    --mermaid-modal-btn-bg: #fff;
-    --mermaid-modal-btn-hover: #ddd;
-
-    &[data-scheme="dark"] {
-        --mermaid-toolbar-btn-bg: rgba(0, 0, 0, 0.85);
-        --mermaid-toolbar-btn-text: #eee;
-        --mermaid-modal-content-bg: #1e1e1e;
-        --mermaid-modal-btn-bg: #333;
-        --mermaid-modal-btn-hover: #444;
-    }
+    /* Mermaid component — styles in partials/article.scss */
 
     /* Article compact image size */
     --article-compact-image-size: 50px;

@@ -22,8 +22,6 @@ interface MermaidConfig {
 
 type Scheme = 'light' | 'dark';
 
-const PANZOOM_CDN = 'https://cdn.jsdelivr.net/npm/panzoom@9.4.3/+esm';
-
 function getScheme(): Scheme {
     return document.documentElement.dataset.scheme === 'dark' ? 'dark' : 'light';
 }
@@ -90,7 +88,7 @@ function setupWrappers(elements: NodeListOf<HTMLElement>) {
         wrapper.appendChild(el);
         wrapper.insertAdjacentHTML(
             'beforeend',
-            `<div class="mermaid-toolbar"><button data-idx="${idx}" title="Open fullscreen with pan/zoom">⛶ Expand</button></div>`,
+            `<div class="mermaid-toolbar"><button data-idx="${idx}" title="全屏查看"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>`,
         );
     });
 }
@@ -99,37 +97,52 @@ function setupModal(elements: NodeListOf<HTMLElement>) {
     const modal = document.getElementById('mermaid-modal')!;
     const modalBody = document.getElementById('mermaid-modal-body')!;
     const modalContent = document.getElementById('mermaid-modal-content')!;
-    let pzInstance: any = null;
-    let panzoom: any = null;
+    const zoomLabel = document.getElementById('mermaid-zoom-label');
 
-    const loadPanzoom = async () => {
-        if (!panzoom) {
-            const url = PANZOOM_CDN;
-            panzoom = (await import(url)).default;
-        }
-        return panzoom;
+    // Transform state — no library, full control
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+    let wrapper: HTMLElement | null = null;
+
+    const applyTransform = () => {
+        if (!wrapper) return;
+        wrapper.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+        if (zoomLabel) zoomLabel.textContent = Math.round(scale * 100) + '%';
     };
 
+    const clampScale = (s: number) => Math.max(0.05, Math.min(10, s));
+
     const fitToScreen = () => {
-        const wrapper = modalContent.querySelector('.mermaid-panzoom-container') as HTMLElement | null;
-        if (!pzInstance || !wrapper) return;
+        if (!wrapper) return;
         const w = +(wrapper.dataset.nativeWidth ?? 0);
         const h = +(wrapper.dataset.nativeHeight ?? 0);
         const rect = modalContent.getBoundingClientRect();
-        const scale = Math.min((rect.width - 60) / w, (rect.height - 60) / h);
-        pzInstance.zoomAbs(0, 0, scale);
-        pzInstance.moveTo((rect.width - w * scale) / 2, (rect.height - h * scale) / 2);
+        scale = clampScale(Math.min((rect.width - 40) / w, (rect.height - 40) / h));
+        tx = (rect.width - w * scale) / 2;
+        ty = (rect.height - h * scale) / 2;
+        applyTransform();
+    };
+
+    // Zoom toward a point (cx, cy in container coords)
+    const zoomAt = (factor: number, cx: number, cy: number) => {
+        const newScale = clampScale(scale * factor);
+        const ratio = newScale / scale;
+        tx = cx - ratio * (cx - tx);
+        ty = cy - ratio * (cy - ty);
+        scale = newScale;
+        applyTransform();
     };
 
     const closeModal = () => {
         modal.classList.remove('active');
         document.body.style.overflow = '';
-        pzInstance?.dispose();
-        pzInstance = null;
+        wrapper = null;
+        scale = 1; tx = 0; ty = 0;
         modalContent.innerHTML = '';
     };
 
-    const openModal = async (idx: number) => {
+    const openModal = (idx: number) => {
         const svg = elements[idx].querySelector('svg');
         if (!svg) return;
 
@@ -141,10 +154,11 @@ function setupModal(elements: NodeListOf<HTMLElement>) {
         svgClone.setAttribute('width', String(w));
         svgClone.setAttribute('height', String(h));
 
-        const wrapper = document.createElement('div');
+        wrapper = document.createElement('div');
         wrapper.className = 'mermaid-panzoom-container';
         wrapper.dataset.nativeWidth = String(w);
         wrapper.dataset.nativeHeight = String(h);
+        wrapper.style.transformOrigin = '0 0';
         wrapper.appendChild(svgClone);
 
         modalContent.innerHTML = '';
@@ -152,27 +166,67 @@ function setupModal(elements: NodeListOf<HTMLElement>) {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        const pz = await loadPanzoom();
-        setTimeout(() => {
-            pzInstance = pz(wrapper, { maxZoom: 10, minZoom: 0.05, bounds: false });
-            fitToScreen();
-            wrapper.classList.add('ready');
-        }, 50);
+        fitToScreen();
+        wrapper.classList.add('ready');
+
+        // --- Drag (pointer events) ---
+        let dragging = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        wrapper.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            wrapper!.setPointerCapture(e.pointerId);
+            e.preventDefault();
+        });
+
+        wrapper.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            tx += e.clientX - lastX;
+            ty += e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            applyTransform();
+        });
+
+        wrapper.addEventListener('pointerup', () => { dragging = false; });
+        wrapper.addEventListener('pointercancel', () => { dragging = false; });
+
+        // --- Wheel / trackpad two-finger scroll → pan ---
+        wrapper.addEventListener('wheel', (e: WheelEvent) => {
+            e.preventDefault();
+            // Pinch-to-zoom on trackpad sends wheel with ctrlKey
+            if (e.ctrlKey) {
+                const rect = modalContent.getBoundingClientRect();
+                const cx = e.clientX - rect.left;
+                const cy = e.clientY - rect.top;
+                const factor = e.deltaY > 0 ? 0.9 : 1.1;
+                zoomAt(factor, cx, cy);
+            } else {
+                // Two-finger scroll → pan
+                tx -= e.deltaX;
+                ty -= e.deltaY;
+                applyTransform();
+            }
+        }, { passive: false });
     };
 
-    // Event delegation
+    // Event delegation for toolbar buttons
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
         const toolbarBtn = target.closest('.mermaid-toolbar button') as HTMLElement | null;
         if (toolbarBtn) return openModal(+(toolbarBtn.dataset.idx!));
 
         const zoomBtn = target.closest('.mermaid-modal-controls button') as HTMLElement | null;
-        if (zoomBtn && pzInstance) {
+        if (zoomBtn && wrapper) {
             const z = zoomBtn.dataset.zoom;
-            const rect = modalBody.getBoundingClientRect();
+            const rect = modalContent.getBoundingClientRect();
+            const cx = rect.width / 2;
+            const cy = rect.height / 2;
             if (z === 'fit') fitToScreen();
-            else if (z === '0') { pzInstance.moveTo(0, 0); pzInstance.zoomAbs(0, 0, 1); }
-            else pzInstance.smoothZoom(rect.width / 2, rect.height / 2, z === '1' ? 1.5 : 0.67);
+            else zoomAt(z === '1' ? 1.5 : 0.67, cx, cy);
         }
     });
 
