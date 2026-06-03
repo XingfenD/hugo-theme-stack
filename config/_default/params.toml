@@ -34,7 +34,7 @@ SortBy         = "default"
     headingAnchor = false
     math          = false
     toc           = true
-    readingTime   = true
+    readingTime   = false
 
     [article.list]
         # Showing article tags in the list view (e.g. homepage, section pages)
