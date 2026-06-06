@@ -297,6 +297,14 @@
     }
 }
 
+.sidebar-sitemap-link {
+    list-style: none;
+
+    &::marker {
+        display: none;
+    }
+}
+
 .sitemap-header {
     margin-bottom: var(--spacing-lg);
 
