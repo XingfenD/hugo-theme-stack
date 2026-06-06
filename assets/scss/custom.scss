@@ -248,6 +248,10 @@
         &:hover {
             opacity: 0.85;
         }
+
+        [data-scheme="dark"] & {
+            color: var(--card-background);
+        }
     }
 
     .password-gate-error {
