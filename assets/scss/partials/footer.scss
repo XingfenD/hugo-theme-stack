@@ -27,4 +27,21 @@ footer.site-footer {
             color: var(--body-text-color);
         }
     }
+
+    .footer-links {
+        margin-top: var(--spacing-xs);
+        font-size: 1.2rem;
+        display: flex;
+        gap: 1em;
+
+        a {
+            color: var(--accent-color);
+            opacity: 0.8;
+            transition: opacity 0.2s;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
 }

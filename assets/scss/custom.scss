@@ -281,6 +281,66 @@
     }
 }
 
+/* Sitemap page */
+.sitemap-sections {
+    .sitemap-group {
+        margin-bottom: var(--spacing-lg);
+
+        > h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--body-text-color);
+            margin-bottom: var(--spacing-sm);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 1px solid var(--card-separator-color);
+        }
+    }
+}
+
+.sitemap-header {
+    margin-bottom: var(--spacing-lg);
+
+    .page-title {
+        margin: 0 0 0.4rem;
+    }
+}
+
+.sitemap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.sitemap-card {
+    display: block;
+    padding: 16px 20px;
+    background: var(--card-background);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--shadow-l1);
+    text-decoration: none;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+        box-shadow: var(--shadow-l2);
+        transform: translateY(-2px);
+    }
+
+    .sitemap-card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--card-text-color-main);
+        margin: 0;
+    }
+
+    .sitemap-card-desc {
+        margin: 0.4rem 0 0;
+        font-size: 1.3rem;
+        color: var(--card-text-color-secondary);
+        line-height: 1.5;
+    }
+}
+
+
 /* macOS-style code blocks — override v4 defaults */
 .article-content {
     pre {
