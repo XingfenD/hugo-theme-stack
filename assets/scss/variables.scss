@@ -122,7 +122,7 @@
     --pre-text-color: #f8f8f2;
     --pre-background-color: #272822;
     --code-block-border-color: rgba(52, 73, 94, 0.14);
-    --code-block-header-background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+    --code-block-header-background: #f1f3f5;
     --code-block-header-border-color: rgba(52, 73, 94, 0.14);
     --code-block-lang-color: rgba(52, 73, 94, 0.86);
     --code-block-line-number-color: #8a95a4;
@@ -155,7 +155,7 @@
 
         /* Code block dark mode */
         --code-block-border-color: rgba(148, 163, 184, 0.3);
-        --code-block-header-background: linear-gradient(180deg, #2b2d32 0%, #24262b 100%);
+        --code-block-header-background: #2a2c31;
         --code-block-header-border-color: rgba(148, 163, 184, 0.3);
         --code-block-lang-color: rgba(226, 232, 240, 0.86);
         --code-block-line-number-color: rgba(148, 163, 184, 0.86);

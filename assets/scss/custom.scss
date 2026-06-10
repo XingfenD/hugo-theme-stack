@@ -367,7 +367,7 @@
         max-width: 100% !important;
         margin: 1.35em 0 !important;
         border: 1px solid var(--code-block-border-color);
-        box-shadow: var(--shadow-l2) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
         background: var(--pre-background-color);
         padding: var(--code-header-height) 0 0 !important;
         position: relative;
@@ -387,9 +387,9 @@
             height: var(--code-header-height);
             border-bottom: 1px solid var(--code-block-header-border-color);
             background:
-                radial-gradient(circle at 20px 50%, #ff5f57 0, #ff5f57 5px, transparent 6px),
-                radial-gradient(circle at 38px 50%, #febc2e 0, #febc2e 5px, transparent 6px),
-                radial-gradient(circle at 56px 50%, #28c840 0, #28c840 5px, transparent 6px),
+                radial-gradient(circle at 18px 50%, #ff5f57 0, #ff5f57 4px, transparent 5px),
+                radial-gradient(circle at 34px 50%, #febc2e 0, #febc2e 4px, transparent 5px),
+                radial-gradient(circle at 50px 50%, #28c840 0, #28c840 4px, transparent 5px),
                 var(--code-block-header-background);
             pointer-events: none;
         }
@@ -405,6 +405,7 @@
             border: 1px solid var(--code-block-header-border-color);
             background: var(--code-block-gutter-background);
             color: var(--code-block-lang-color);
+            font-family: var(--sys-font-family), system-ui, -apple-system, sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
             line-height: 1.3;
