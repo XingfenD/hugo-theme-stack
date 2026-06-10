@@ -16,21 +16,30 @@ import { setupCodeCopy } from './code-copy';
 /**
  * Scroll reveal animation — fade in article content elements as they enter the viewport
  */
+const SCROLL_REVEAL_SELECTORS = '.article-content > p, .article-content > h2, .article-content > h3, .article-content > h4, .article-content > ul, .article-content > ol, .article-content > pre, .article-content > .highlight, .article-content > blockquote, .article-content > .table-wrapper, .article-content > figure, .article-content > hr, .article-content > .mermaid-wrapper, .timeline-year';
+
+let scrollRevealObserver: IntersectionObserver | null = null;
+
 function setupScrollReveal() {
-    const selectors = '.article-content > p, .article-content > h2, .article-content > h3, .article-content > h4, .article-content > ul, .article-content > ol, .article-content > pre, .article-content > .highlight, .article-content > blockquote, .article-content > .table-wrapper, .article-content > figure, .article-content > hr, .timeline-year';
-    const elements = document.querySelectorAll(selectors);
+    const elements = document.querySelectorAll(SCROLL_REVEAL_SELECTORS);
     if (!elements.length) return;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { rootMargin: '0px 0px -40px 0px', threshold: 0.1 });
+    if (!scrollRevealObserver) {
+        scrollRevealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    scrollRevealObserver!.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '0px 0px -40px 0px', threshold: 0.1 });
+    }
 
-    elements.forEach(el => observer.observe(el));
+    elements.forEach(el => {
+        if (!el.classList.contains('revealed')) {
+            scrollRevealObserver!.observe(el);
+        }
+    });
 }
 
 /**
@@ -163,6 +172,9 @@ let Stack = {
         setupPaginationJump();
         setupScrollReveal();
         setupInteractions();
+
+        // Re-observe elements after Mermaid wraps diagrams
+        window.addEventListener('mermaid:wrapped', setupScrollReveal);
         setupPasswordGate();
         setupCodeBlockLang();
 

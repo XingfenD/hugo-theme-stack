@@ -258,6 +258,9 @@ export async function initMermaidPage(config: MermaidConfig) {
     setupWrappers(elements);
     setupModal(elements);
 
+    // Notify scroll reveal to re-observe elements moved inside wrappers
+    window.dispatchEvent(new CustomEvent('mermaid:wrapped'));
+
     // Initial render
     const scheme = getScheme();
     initWithTheme(scheme, themes, baseConfig);
