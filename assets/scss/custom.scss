@@ -353,6 +353,21 @@
 }
 
 
+/* Music indicator on article cards */
+.article-music-indicator {
+    color: var(--accent-color);
+    opacity: 0.8;
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    span {
+        font-size: 1.2rem;
+    }
+}
+
 /* macOS-style code blocks — override v4 defaults */
 .article-content {
     pre {
