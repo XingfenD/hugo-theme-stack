@@ -16,7 +16,7 @@ import { setupCodeCopy } from './code-copy';
 /**
  * Scroll reveal animation — fade in article content elements as they enter the viewport
  */
-const SCROLL_REVEAL_SELECTORS = '.article-content > p, .article-content > h2, .article-content > h3, .article-content > h4, .article-content > ul, .article-content > ol, .article-content > pre, .article-content > .highlight, .article-content > blockquote, .article-content > .table-wrapper, .article-content > figure, .article-content > hr, .article-content > .mermaid-wrapper, .timeline-year';
+const SCROLL_REVEAL_SELECTORS = '.article-content > p, .article-content > h2, .article-content > h3, .article-content > h4, .article-content > ul, .article-content > ol, .article-content > pre, .article-content > .highlight, .article-content > blockquote, .article-content > .table-wrapper, .article-content > figure, .article-content > hr, .article-content > .mermaid-wrapper, .article-content > .aplayer-container, .timeline-year';
 
 let scrollRevealObserver: IntersectionObserver | null = null;
 
