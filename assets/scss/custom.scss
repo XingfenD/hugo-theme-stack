@@ -1,5 +1,18 @@
 /* ===== Custom styles ported from stack-xf ===== */
 
+/* APlayer dark mode overrides */
+[data-scheme="dark"] .aplayer {
+    color: var(--card-text-color-main);
+
+    .aplayer-title {
+        color: var(--card-text-color-main);
+    }
+
+    .aplayer-author {
+        color: var(--card-text-color-secondary);
+    }
+}
+
 /* Article content link colors — more vivid than the global accent color */
 .article-content a {
     color: #2980b9;
