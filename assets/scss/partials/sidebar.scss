@@ -226,3 +226,97 @@
         }
     }
 }
+
+// Music player widget
+.sidebar-music-player {
+    .music-player-body {
+        @include card-style;
+    }
+
+    .music-player-inner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 18px;
+    }
+
+    .music-player-cover {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--tag-border-radius);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--card-background-secondary, rgba(0, 0, 0, 0.08));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .music-player-cover-placeholder {
+        font-size: 18px;
+        opacity: 0.5;
+    }
+
+    .music-player-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .music-player-artist {
+        font-size: 1.2rem;
+        color: var(--card-text-color-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .music-player-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: var(--accent-color);
+        color: var(--white, #fff);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+        opacity: 0.85;
+
+        &:hover {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    .music-player-progress {
+        height: 4px;
+        background: var(--card-background-secondary, rgba(0, 0, 0, 0.08));
+        border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .music-player-progress-bar {
+        height: 100%;
+        background: var(--accent-color);
+        width: 0%;
+        transition: width 0.3s linear;
+    }
+
+    &.music-player-active .music-player-btn {
+        opacity: 1;
+    }
+}
