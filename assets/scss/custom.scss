@@ -2,14 +2,17 @@
 
 /* APlayer dark mode overrides */
 [data-scheme="dark"] .aplayer {
+    background: var(--card-background);
     color: var(--card-text-color-main);
 
-    .aplayer-title {
-        color: var(--card-text-color-main);
-    }
+    .aplayer-info .aplayer-music {
+        .aplayer-title {
+            color: var(--card-text-color-main);
+        }
 
-    .aplayer-author {
-        color: var(--card-text-color-secondary);
+        .aplayer-author {
+            color: var(--card-text-color-secondary);
+        }
     }
 }
 
