@@ -7,35 +7,40 @@
  * responsive layout switches.
  */
 
-function extractCover(audioUrl: string): Promise<string> {
+function fetchAndExtract(audioUrl: string): Promise<{ blobUrl: string; coverDataUrl: string }> {
+    return fetch(audioUrl)
+        .then(r => r.arrayBuffer())
+        .then(buffer => {
+            const blobUrl = URL.createObjectURL(new Blob([buffer]));
+            return extractCoverFromBuffer(buffer).then(coverDataUrl => ({ blobUrl, coverDataUrl }));
+        })
+        .catch(() => ({ blobUrl: audioUrl, coverDataUrl: '' }));
+}
+
+function extractCoverFromBuffer(buffer: ArrayBuffer): Promise<string> {
     return new Promise((resolve) => {
         if (typeof (window as any).jsmediatags === 'undefined') {
             resolve('');
             return;
         }
-        fetch(audioUrl)
-            .then(r => r.arrayBuffer())
-            .then(buffer => {
-                (window as any).jsmediatags.read(new Blob([buffer]), {
-                    onSuccess: (tag: any) => {
-                        const pic = tag.tags?.picture;
-                        if (!pic) { resolve(''); return; }
-                        let base64 = '';
-                        for (let i = 0; i < pic.data.length; i++) {
-                            base64 += String.fromCharCode(pic.data[i]);
-                        }
-                        resolve(`data:${pic.format};base64,${btoa(base64)}`);
-                    },
-                    onError: () => resolve('')
-                });
-            })
-            .catch(() => resolve(''));
+        (window as any).jsmediatags.read(new Blob([buffer]), {
+            onSuccess: (tag: any) => {
+                const pic = tag.tags?.picture;
+                if (!pic) { resolve(''); return; }
+                let base64 = '';
+                for (let i = 0; i < pic.data.length; i++) {
+                    base64 += String.fromCharCode(pic.data[i]);
+                }
+                resolve(`data:${pic.format};base64,${btoa(base64)}`);
+            },
+            onError: () => resolve('')
+        });
     });
 }
 
 // --- Shared singleton state ---
 let sharedAudio: HTMLAudioElement | null = null;
-let sharedState = { hasStarted: false, coverDataUrl: '' };
+let sharedState = { hasStarted: false, coverDataUrl: '', blobUrl: '' };
 let firstInteractionBound = false;
 
 function getSharedAudio(): HTMLAudioElement {
@@ -88,7 +93,7 @@ function bindInstance(el: HTMLElement) {
     function startPlayback() {
         if (sharedState.hasStarted) return;
         sharedState.hasStarted = true;
-        audio.src = audioUrl;
+        audio.src = sharedState.blobUrl || audioUrl;
         audio.play().then(() => updateUI()).catch(() => {});
     }
 
@@ -164,11 +169,15 @@ function bindInstance(el: HTMLElement) {
         applyCover(sharedState.coverDataUrl);
     } else if (coverUrl) {
         applyCover(coverUrl);
-    } else {
-        extractCover(audioUrl).then(dataUrl => {
-            if (dataUrl) {
-                sharedState.coverDataUrl = dataUrl;
-                applyCover(dataUrl);
+    }
+
+    // Fetch audio once for blob URL (reused by startPlayback) + cover extraction
+    if (!sharedState.blobUrl && !sharedState.hasStarted) {
+        fetchAndExtract(audioUrl).then(({ blobUrl, coverDataUrl }) => {
+            sharedState.blobUrl = blobUrl;
+            if (!coverUrl && coverDataUrl && !sharedState.coverDataUrl) {
+                sharedState.coverDataUrl = coverDataUrl;
+                applyCover(coverDataUrl);
             }
         });
     }
