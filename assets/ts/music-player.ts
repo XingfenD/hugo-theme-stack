@@ -41,6 +41,7 @@ function extractCoverFromBuffer(buffer: ArrayBuffer): Promise<string> {
 // --- Shared singleton state ---
 let sharedAudio: HTMLAudioElement | null = null;
 let sharedState = { hasStarted: false, coverDataUrl: '', blobUrl: '' };
+let sharedFetchPromise: Promise<{ blobUrl: string; coverDataUrl: string }> | null = null;
 let firstInteractionBound = false;
 
 function getSharedAudio(): HTMLAudioElement {
@@ -62,12 +63,30 @@ function bindInstance(el: HTMLElement) {
     const btnLoop = el.querySelector('.music-player-btn-loop') as HTMLButtonElement;
     const iconPlay = el.querySelector('.icon-play') as SVGElement;
     const iconPause = el.querySelector('.icon-pause') as SVGElement;
+    const iconLoading = el.querySelector('.icon-loading') as SVGElement;
     const coverEl = el.querySelector('.music-player-cover') as HTMLElement;
     const placeholder = el.querySelector('.music-player-cover-placeholder') as HTMLElement;
     const progressContainer = el.querySelector('.music-player-progress') as HTMLElement;
     const progressBar = el.querySelector('.music-player-progress-bar') as HTMLElement;
 
+    let isLoading = !sharedState.blobUrl;
+
+    function setLoading(loading: boolean) {
+        isLoading = loading;
+        if (loading) {
+            iconPlay.style.display = 'none';
+            iconPause.style.display = 'none';
+            iconLoading.style.display = '';
+            el.classList.add('music-player-loading');
+        } else {
+            iconLoading.style.display = 'none';
+            el.classList.remove('music-player-loading');
+            updateUI();
+        }
+    }
+
     function updateUI() {
+        if (isLoading) return;
         if (audio.paused) {
             iconPlay.style.display = '';
             iconPause.style.display = 'none';
@@ -93,6 +112,7 @@ function bindInstance(el: HTMLElement) {
     function startPlayback() {
         if (sharedState.hasStarted) return;
         sharedState.hasStarted = true;
+        if (isLoading) setLoading(false);
         audio.src = sharedState.blobUrl || audioUrl;
         audio.play().then(() => updateUI()).catch(() => {});
     }
@@ -156,13 +176,18 @@ function bindInstance(el: HTMLElement) {
     });
 
     // Cover extraction (shared result)
+    let coverApplied = false;
     function applyCover(dataUrl: string) {
-        if (!dataUrl) return;
+        if (!dataUrl || coverApplied) return;
+        coverApplied = true;
         const img = document.createElement('img');
-        img.src = dataUrl;
         img.alt = 'Album cover';
-        coverEl.prepend(img);
-        placeholder.style.display = 'none';
+        img.onload = () => {
+            coverEl.prepend(img);
+            requestAnimationFrame(() => img.classList.add('loaded'));
+            placeholder.style.display = 'none';
+        };
+        img.src = dataUrl;
     }
 
     if (sharedState.coverDataUrl) {
@@ -173,13 +198,22 @@ function bindInstance(el: HTMLElement) {
 
     // Fetch audio once for blob URL (reused by startPlayback) + cover extraction
     if (!sharedState.blobUrl && !sharedState.hasStarted) {
-        fetchAndExtract(audioUrl).then(({ blobUrl, coverDataUrl }) => {
+        setLoading(true);
+        if (!sharedFetchPromise) {
+            sharedFetchPromise = fetchAndExtract(audioUrl);
+        }
+        sharedFetchPromise.then(({ blobUrl, coverDataUrl }) => {
             sharedState.blobUrl = blobUrl;
             if (!coverUrl && coverDataUrl && !sharedState.coverDataUrl) {
                 sharedState.coverDataUrl = coverDataUrl;
-                applyCover(coverDataUrl);
             }
+            if (sharedState.coverDataUrl) {
+                applyCover(sharedState.coverDataUrl);
+            }
+            setLoading(false);
         });
+    } else if (sharedState.blobUrl) {
+        setLoading(false);
     }
 }
 
