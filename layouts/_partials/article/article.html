@@ -4,6 +4,9 @@
     {{/* Collection bar — shows series membership */}}
     {{ partial "article/components/collection-bar" . }}
 
+    {{/* Music player — shown here on mobile/tablet, hidden on desktop (sidebar version takes over) */}}
+    {{ partial "sidebar/music-player" (dict "Context" .) }}
+
     {{ if .Scratch.Get "TOCEnabled" }}
     <aside class="article-toc">
         <details>

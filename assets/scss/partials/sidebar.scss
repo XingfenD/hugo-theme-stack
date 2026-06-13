@@ -228,6 +228,33 @@
 }
 
 // Music player widget
+// Article version: visible on mobile/tablet, hidden on desktop
+.main-article > .sidebar-music-player {
+    margin-bottom: var(--spacing-lg);
+
+    .widget-icon,
+    .widget-title {
+        display: none;
+    }
+
+    @include respond(lg) {
+        display: none;
+    }
+}
+
+// Sidebar version: hidden on mobile/tablet, visible on desktop
+.right-sidebar .sidebar-music-player {
+    display: none;
+
+    .music-player-card-name {
+        display: none;
+    }
+
+    @include respond(lg) {
+        display: flex;
+    }
+}
+
 .sidebar-music-player {
     .music-player-body {
         @include card-style;
@@ -268,6 +295,16 @@
         min-width: 0;
     }
 
+    .music-player-name,
+    .music-player-card-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--card-text-color-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .music-player-artist {
         font-size: 1.2rem;
         color: var(--card-text-color-secondary);
@@ -276,19 +313,28 @@
         text-overflow: ellipsis;
     }
 
+    .music-player-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
     .music-player-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
         border: none;
-        background: var(--accent-color);
-        color: var(--white, #fff);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .music-player-btn-play {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        color: var(--white, #fff);
         opacity: 0.85;
 
         &:hover {
@@ -298,6 +344,24 @@
 
         &:active {
             transform: scale(0.95);
+        }
+    }
+
+    .music-player-btn-loop {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--card-text-color-secondary);
+        opacity: 0.5;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        &.active {
+            color: var(--accent-color);
+            opacity: 1;
         }
     }
 
@@ -316,7 +380,7 @@
         transition: width 0.3s linear;
     }
 
-    &.music-player-active .music-player-btn {
+    &.music-player-active .music-player-btn-play {
         opacity: 1;
     }
 }

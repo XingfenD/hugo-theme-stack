@@ -1,6 +1,10 @@
 /**
  * Sidebar music player — initialized on pages with frontmatter `music:` config.
  * Uses native <audio> with first-interaction autoplay and jsmediatags cover extraction.
+ *
+ * Singleton pattern: a single Audio instance and shared state are reused across
+ * multiple DOM instances (article version + sidebar version) so playback survives
+ * responsive layout switches.
  */
 
 function extractCover(audioUrl: string): Promise<string> {
@@ -29,26 +33,34 @@ function extractCover(audioUrl: string): Promise<string> {
     });
 }
 
-function initMusicPlayer() {
-    const el = document.querySelector('.sidebar-music-player') as HTMLElement;
-    if (!el) return;
+// --- Shared singleton state ---
+let sharedAudio: HTMLAudioElement | null = null;
+let sharedState = { hasStarted: false, coverDataUrl: '' };
+let firstInteractionBound = false;
 
+function getSharedAudio(): HTMLAudioElement {
+    if (!sharedAudio) {
+        sharedAudio = new Audio();
+        sharedAudio.preload = 'auto';
+    }
+    return sharedAudio;
+}
+
+function bindInstance(el: HTMLElement) {
     const audioUrl = el.dataset.audioUrl;
     const coverUrl = el.dataset.coverUrl;
     if (!audioUrl) return;
 
-    const audio = new Audio();
-    audio.preload = 'auto';
+    const audio = getSharedAudio();
 
-    const btn = el.querySelector('.music-player-btn') as HTMLButtonElement;
+    const btnPlay = el.querySelector('.music-player-btn-play') as HTMLButtonElement;
+    const btnLoop = el.querySelector('.music-player-btn-loop') as HTMLButtonElement;
     const iconPlay = el.querySelector('.icon-play') as SVGElement;
     const iconPause = el.querySelector('.icon-pause') as SVGElement;
     const coverEl = el.querySelector('.music-player-cover') as HTMLElement;
     const placeholder = el.querySelector('.music-player-cover-placeholder') as HTMLElement;
     const progressContainer = el.querySelector('.music-player-progress') as HTMLElement;
     const progressBar = el.querySelector('.music-player-progress-bar') as HTMLElement;
-
-    let hasStarted = false;
 
     function updateUI() {
         if (audio.paused) {
@@ -58,33 +70,51 @@ function initMusicPlayer() {
             iconPlay.style.display = 'none';
             iconPause.style.display = '';
         }
+        if (sharedState.hasStarted) {
+            el.classList.add('music-player-active');
+        }
+    }
+
+    function syncProgress() {
+        if (audio.duration) {
+            progressBar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+        }
+    }
+
+    function syncLoop() {
+        btnLoop.classList.toggle('active', audio.loop);
     }
 
     function startPlayback() {
-        if (hasStarted) return;
-        hasStarted = true;
+        if (sharedState.hasStarted) return;
+        sharedState.hasStarted = true;
         audio.src = audioUrl;
-        audio.play().then(() => {
-            el.classList.add('music-player-active');
-            updateUI();
-        }).catch(() => {});
+        audio.play().then(() => updateUI()).catch(() => {});
     }
 
-    // First-interaction autoplay
-    function onFirstInteraction() {
-        document.removeEventListener('click', onFirstInteraction);
-        document.removeEventListener('scroll', onFirstInteraction);
-        document.removeEventListener('keydown', onFirstInteraction);
-        startPlayback();
+    // Sync UI immediately for already-playing state
+    updateUI();
+    syncProgress();
+    syncLoop();
+
+    // First-interaction autoplay (only bind once globally)
+    if (!firstInteractionBound) {
+        firstInteractionBound = true;
+        const onFirstInteraction = () => {
+            document.removeEventListener('click', onFirstInteraction);
+            document.removeEventListener('scroll', onFirstInteraction);
+            document.removeEventListener('keydown', onFirstInteraction);
+            startPlayback();
+        };
+        document.addEventListener('click', onFirstInteraction, { once: true } as EventListenerOptions);
+        document.addEventListener('scroll', onFirstInteraction, { once: true, passive: true } as EventListenerOptions);
+        document.addEventListener('keydown', onFirstInteraction, { once: true } as EventListenerOptions);
     }
-    document.addEventListener('click', onFirstInteraction, { once: true } as EventListenerOptions);
-    document.addEventListener('scroll', onFirstInteraction, { once: true, passive: true } as EventListenerOptions);
-    document.addEventListener('keydown', onFirstInteraction, { once: true } as EventListenerOptions);
 
     // Play/pause button
-    btn.addEventListener('click', (e) => {
+    btnPlay.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (!hasStarted) {
+        if (!sharedState.hasStarted) {
             startPlayback();
             return;
         }
@@ -95,15 +125,17 @@ function initMusicPlayer() {
         }
     });
 
+    // Loop button
+    btnLoop.addEventListener('click', (e) => {
+        e.stopPropagation();
+        audio.loop = !audio.loop;
+        syncLoop();
+    });
+
+    // Audio events — sync this instance's UI
     audio.addEventListener('play', updateUI);
     audio.addEventListener('pause', updateUI);
-
-    // Progress bar
-    audio.addEventListener('timeupdate', () => {
-        if (audio.duration) {
-            progressBar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
-        }
-    });
+    audio.addEventListener('timeupdate', syncProgress);
     audio.addEventListener('ended', () => {
         progressBar.style.width = '0%';
         updateUI();
@@ -118,27 +150,36 @@ function initMusicPlayer() {
         progressBar.style.width = `${ratio * 100}%`;
     });
 
-    // Cover extraction
-    if (coverUrl) {
+    // Cover extraction (shared result)
+    function applyCover(dataUrl: string) {
+        if (!dataUrl) return;
         const img = document.createElement('img');
-        img.src = coverUrl;
+        img.src = dataUrl;
         img.alt = 'Album cover';
         coverEl.prepend(img);
         placeholder.style.display = 'none';
+    }
+
+    if (sharedState.coverDataUrl) {
+        applyCover(sharedState.coverDataUrl);
+    } else if (coverUrl) {
+        applyCover(coverUrl);
     } else {
         extractCover(audioUrl).then(dataUrl => {
             if (dataUrl) {
-                const img = document.createElement('img');
-                img.src = dataUrl;
-                img.alt = 'Album cover';
-                coverEl.prepend(img);
-                placeholder.style.display = 'none';
+                sharedState.coverDataUrl = dataUrl;
+                applyCover(dataUrl);
             }
         });
     }
 }
 
-// Auto-init on DOMContentLoaded
+function initMusicPlayer() {
+    document.querySelectorAll('.sidebar-music-player').forEach(el => {
+        bindInstance(el as HTMLElement);
+    });
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMusicPlayer);
 } else {
