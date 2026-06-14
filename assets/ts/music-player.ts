@@ -5,6 +5,9 @@
  * Singleton pattern: a single Audio instance and shared state are reused across
  * multiple DOM instances (article version + sidebar version) so playback survives
  * responsive layout switches.
+ *
+ * Audio fetch is deferred until first user interaction to avoid blocking page render
+ * with a large download on initial load.
  */
 
 function fetchAndExtract(audioUrl: string): Promise<{ blobUrl: string; coverDataUrl: string }> {
@@ -52,6 +55,26 @@ function getSharedAudio(): HTMLAudioElement {
     return sharedAudio;
 }
 
+/**
+ * Ensure audio is fetched and ready. Returns a promise that resolves
+ * with the blob URL. Only fetches once (cached in sharedFetchPromise).
+ * If fetch already completed, resolves immediately.
+ */
+function ensureAudioReady(audioUrl: string): Promise<string> {
+    if (sharedState.blobUrl) return Promise.resolve(sharedState.blobUrl);
+
+    if (!sharedFetchPromise) {
+        sharedFetchPromise = fetchAndExtract(audioUrl);
+    }
+    return sharedFetchPromise.then(({ blobUrl, coverDataUrl }) => {
+        sharedState.blobUrl = blobUrl;
+        if (coverDataUrl && !sharedState.coverDataUrl) {
+            sharedState.coverDataUrl = coverDataUrl;
+        }
+        return blobUrl;
+    });
+}
+
 function bindInstance(el: HTMLElement) {
     const audioUrl = el.dataset.audioUrl;
     const coverUrl = el.dataset.coverUrl;
@@ -69,7 +92,7 @@ function bindInstance(el: HTMLElement) {
     const progressContainer = el.querySelector('.music-player-progress') as HTMLElement;
     const progressBar = el.querySelector('.music-player-progress-bar') as HTMLElement;
 
-    let isLoading = !sharedState.blobUrl;
+    let isLoading = false;
 
     function setLoading(loading: boolean) {
         isLoading = loading;
@@ -112,9 +135,21 @@ function bindInstance(el: HTMLElement) {
     function startPlayback() {
         if (sharedState.hasStarted) return;
         sharedState.hasStarted = true;
-        if (isLoading) setLoading(false);
-        audio.src = sharedState.blobUrl || audioUrl;
-        audio.play().then(() => updateUI()).catch(() => {});
+
+        // If audio is already fetched, play immediately; otherwise fetch first
+        if (sharedState.blobUrl) {
+            audio.src = sharedState.blobUrl;
+            audio.play().then(() => updateUI()).catch(() => {});
+        } else {
+            setLoading(true);
+            ensureAudioReady(audioUrl).then(blobUrl => {
+                setLoading(false);
+                audio.src = blobUrl;
+                audio.play().then(() => updateUI()).catch(() => {});
+                // Apply cover if extracted from fetch
+                if (sharedState.coverDataUrl) applyCover(sharedState.coverDataUrl);
+            });
+        }
     }
 
     // Sync UI immediately for already-playing state
@@ -175,7 +210,7 @@ function bindInstance(el: HTMLElement) {
         progressBar.style.width = `${ratio * 100}%`;
     });
 
-    // Cover extraction (shared result)
+    // Cover extraction — apply static cover immediately; ID3 cover applied after fetch
     let coverApplied = false;
     function applyCover(dataUrl: string) {
         if (!dataUrl || coverApplied) return;
@@ -190,31 +225,12 @@ function bindInstance(el: HTMLElement) {
         img.src = dataUrl;
     }
 
-    if (sharedState.coverDataUrl) {
-        applyCover(sharedState.coverDataUrl);
-    } else if (coverUrl) {
+    if (coverUrl) {
         applyCover(coverUrl);
+    } else if (sharedState.coverDataUrl) {
+        applyCover(sharedState.coverDataUrl);
     }
-
-    // Fetch audio once for blob URL (reused by startPlayback) + cover extraction
-    if (!sharedState.blobUrl && !sharedState.hasStarted) {
-        setLoading(true);
-        if (!sharedFetchPromise) {
-            sharedFetchPromise = fetchAndExtract(audioUrl);
-        }
-        sharedFetchPromise.then(({ blobUrl, coverDataUrl }) => {
-            sharedState.blobUrl = blobUrl;
-            if (!coverUrl && coverDataUrl && !sharedState.coverDataUrl) {
-                sharedState.coverDataUrl = coverDataUrl;
-            }
-            if (sharedState.coverDataUrl) {
-                applyCover(sharedState.coverDataUrl);
-            }
-            setLoading(false);
-        });
-    } else if (sharedState.blobUrl) {
-        setLoading(false);
-    }
+    // Otherwise: cover will be applied by startPlayback after fetch completes
 }
 
 function initMusicPlayer() {
