@@ -17,7 +17,7 @@
     <script type="text/javascript" src="{{ $customScript.RelPermalink }}" defer></script>
 {{- end -}}
 
-{{- if .Page.Params.music -}}
+{{- if and .Page.Params.music (not .Page.Params.music.disable) -}}
     {{- with resources.Get "ts/music-player.ts" -}}
         {{- $musicScript := . | js.Build $opts | fingerprint -}}
         <script type="text/javascript" src="{{ $musicScript.RelPermalink }}" defer></script>

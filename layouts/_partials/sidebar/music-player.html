@@ -1,4 +1,5 @@
 {{- with .Context.Params.music -}}
+{{- if not .disable -}}
 {{- $url := .url -}}
 {{- $name := .name | default "Unknown" -}}
 {{- $artist := .artist | default "Unknown" -}}
@@ -56,4 +57,5 @@
         <div class="music-player-progress"><div class="music-player-progress-bar"></div></div>
     </div>
 </section>
+{{- end -}}
 {{- end -}}
