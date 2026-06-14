@@ -44,6 +44,14 @@ html[lang="zh"] {
     border-inline-start: 3px solid var(--accent-color);
     border-radius: 0 4px 4px 0;
     padding: 0.8em 1.2em;
+    overflow: hidden;
+
+    // Neutralize full-bleed gallery margins inside blockquotes
+    .gallery {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
 
     .cite {
         display: block;
