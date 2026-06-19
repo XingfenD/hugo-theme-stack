@@ -94,7 +94,7 @@
 }
 
 .micro-home-card {
-    margin-bottom: var(--section-separation);
+    margin-bottom: calc(var(--section-separation) / 4);
     padding: var(--card-padding);
     border-radius: var(--card-border-radius);
     background: var(--card-background);
