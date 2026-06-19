@@ -91,10 +91,6 @@
         }
     }
 
-    [data-scheme="dark"] & .micro-entry {
-        box-shadow: none;
-        border: 1px solid var(--card-separator-color);
-    }
 }
 
 .micro-home-card {
@@ -149,10 +145,6 @@
         }
     }
 
-    [data-scheme="dark"] & {
-        box-shadow: none;
-        border: 1px solid var(--card-separator-color);
-    }
 }
 
 .micro-article .article-content {
