@@ -663,6 +663,9 @@
 .excerpt-single {
   @include card-style;
   padding: var(--card-padding);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 
   .excerpt-image {
     margin: calc(-1 * var(--card-padding));
