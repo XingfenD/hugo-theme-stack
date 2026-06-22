@@ -93,6 +93,10 @@
 
 }
 
+.micro-home-card--hidden {
+    display: none;
+}
+
 .micro-home-card {
     margin-bottom: calc(var(--section-separation) / 4);
     padding: var(--card-padding);
