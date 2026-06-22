@@ -574,3 +574,76 @@
         }
     }
 }
+
+/* Excerpt masonry layout */
+.excerpt-masonry {
+  columns: 1;
+  column-gap: var(--section-separation);
+
+  @include respond(md) {
+    columns: 2;
+  }
+
+  @include respond(xl) {
+    columns: 3;
+  }
+}
+
+.excerpt-card {
+  break-inside: avoid;
+  margin-bottom: var(--section-separation);
+  @include card-style;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+
+  &:hover {
+    box-shadow: var(--shadow-l2);
+  }
+}
+
+.excerpt-card-image {
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.excerpt-card-content {
+  padding: var(--card-padding);
+}
+
+.excerpt-card-text {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--card-text-color-main);
+  margin-bottom: var(--spacing-md);
+}
+
+.excerpt-card-meta {
+  font-size: 1.2rem;
+  color: var(--card-text-color-tertiary);
+
+  .excerpt-source {
+    font-weight: 500;
+    color: var(--card-text-color-secondary);
+  }
+
+  .excerpt-author {
+    color: var(--card-text-color-tertiary);
+  }
+
+  time {
+    font-size: 1.1rem;
+  }
+}
+
+.excerpt-card-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
