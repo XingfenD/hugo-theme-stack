@@ -647,3 +647,69 @@
   height: 100%;
   z-index: 1;
 }
+
+/* Excerpt single page */
+.excerpt-single {
+  @include card-style;
+  padding: var(--card-padding);
+
+  .excerpt-image {
+    margin: calc(-1 * var(--card-padding));
+    margin-bottom: var(--spacing-xl);
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+
+  .excerpt-content {
+    font-size: var(--article-font-size);
+    line-height: var(--article-line-height);
+    color: var(--card-text-color-main);
+
+    p {
+      margin-bottom: var(--spacing-md);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .excerpt-meta {
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--card-separator-color);
+    font-size: 1.3rem;
+    color: var(--card-text-color-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    .excerpt-source {
+      color: var(--card-text-color-main);
+    }
+
+    .excerpt-author {
+      color: var(--card-text-color-secondary);
+    }
+
+    .excerpt-note {
+      font-style: italic;
+      color: var(--card-text-color-tertiary);
+    }
+
+    .excerpt-date {
+      margin-top: var(--spacing-sm);
+      font-size: 1.2rem;
+      color: var(--card-text-color-tertiary);
+    }
+
+    strong {
+      font-weight: 600;
+      color: var(--card-text-color-main);
+    }
+  }
+}
