@@ -647,6 +647,7 @@
 
   time {
     font-size: 1.1rem;
+    color: var(--card-text-color-tertiary);
   }
 }
 
@@ -671,6 +672,13 @@
   @include card-style;
   padding: var(--card-padding);
   max-width: 800px;
+
+  .excerpt-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--card-text-color-main);
+    margin-bottom: var(--spacing-lg);
+  }
 
   .excerpt-image {
     margin: calc(-1 * var(--card-padding));
