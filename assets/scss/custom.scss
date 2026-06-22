@@ -614,6 +614,13 @@
   padding: var(--card-padding);
 }
 
+.excerpt-card-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--card-text-color-main);
+  margin-bottom: var(--spacing-sm);
+}
+
 .excerpt-card-text {
   font-size: 1.4rem;
   line-height: 1.6;
