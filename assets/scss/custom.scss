@@ -633,6 +633,10 @@
   .excerpt-author {
     color: var(--card-text-color-tertiary);
   }
+}
+
+.excerpt-card-date {
+  margin-top: var(--spacing-sm);
 
   time {
     font-size: 1.1rem;
@@ -646,6 +650,13 @@
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+
+.excerpt-empty {
+  text-align: center;
+  padding: var(--spacing-3xl);
+  color: var(--card-text-color-tertiary);
+  font-size: 1.4rem;
 }
 
 /* Excerpt single page */
