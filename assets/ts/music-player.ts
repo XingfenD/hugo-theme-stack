@@ -11,35 +11,26 @@
  */
 
 function fetchAndExtract(audioUrl: string): Promise<{ blobUrl: string; coverDataUrl: string }> {
-    console.log('[music-cover] fetchAndExtract called, url:', audioUrl);
     return fetch(audioUrl)
-        .then(r => { console.log('[music-cover] fetch response status:', r.status); return r.arrayBuffer(); })
+        .then(r => r.arrayBuffer())
         .then(buffer => {
             const blobUrl = URL.createObjectURL(new Blob([buffer]));
-            console.log('[music-cover] audio blob created, size:', buffer.byteLength);
-            return extractCoverFromBuffer(buffer).then(coverDataUrl => {
-                console.log('[music-cover] extraction done, coverDataUrl length:', coverDataUrl.length);
-                return { blobUrl, coverDataUrl };
-            });
+            return extractCoverFromBuffer(buffer).then(coverDataUrl => ({ blobUrl, coverDataUrl }));
         })
-        .catch((err) => { console.warn('[music-cover] fetchAndExtract error:', err); return { blobUrl: audioUrl, coverDataUrl: '' }; });
+        .catch(() => ({ blobUrl: audioUrl, coverDataUrl: '' }));
 }
 
 function waitForJsmediatags(timeout = 5000): Promise<boolean> {
     if (typeof (window as any).jsmediatags !== 'undefined') {
-        console.log('[music-cover] jsmediatags already loaded');
         return Promise.resolve(true);
     }
-    console.log('[music-cover] waiting for jsmediatags...');
     return new Promise((resolve) => {
         const deadline = Date.now() + timeout;
         const poll = () => {
             if (typeof (window as any).jsmediatags !== 'undefined') {
-                console.log('[music-cover] jsmediatags loaded after', Date.now() - (deadline - timeout), 'ms');
                 return resolve(true);
             }
             if (Date.now() > deadline) {
-                console.warn('[music-cover] jsmediatags TIMEOUT after', timeout, 'ms');
                 return resolve(false);
             }
             setTimeout(poll, 100);
@@ -49,26 +40,20 @@ function waitForJsmediatags(timeout = 5000): Promise<boolean> {
 }
 
 function extractCoverFromBuffer(buffer: ArrayBuffer): Promise<string> {
-    console.log('[music-cover] extractCoverFromBuffer called, buffer size:', buffer.byteLength);
     return waitForJsmediatags().then((ready) => {
-        if (!ready) { console.warn('[music-cover] jsmediatags not ready, skipping'); return ''; }
-        console.log('[music-cover] jsmediatags ready, reading tags...');
+        if (!ready) return '';
         return new Promise<string>((resolve) => {
             (window as any).jsmediatags.read(new Blob([buffer]), {
                 onSuccess: (tag: any) => {
-                    console.log('[music-cover] jsmediatags onSuccess, tags:', Object.keys(tag.tags || {}));
                     const pic = tag.tags?.picture;
-                    if (!pic) { console.log('[music-cover] no picture in tags'); resolve(''); return; }
-                    console.log('[music-cover] picture found, format:', pic.format, 'data length:', pic.data.length);
+                    if (!pic) { resolve(''); return; }
                     let base64 = '';
                     for (let i = 0; i < pic.data.length; i++) {
                         base64 += String.fromCharCode(pic.data[i]);
                     }
-                    const dataUrl = `data:${pic.format};base64,${btoa(base64)}`;
-                    console.log('[music-cover] data URL created, length:', dataUrl.length);
-                    resolve(dataUrl);
+                    resolve(`data:${pic.format};base64,${btoa(base64)}`);
                 },
-                onError: (err: any) => { console.warn('[music-cover] jsmediatags onError:', err); resolve(''); }
+                onError: () => resolve('')
             });
         });
     });
@@ -94,7 +79,7 @@ function getSharedAudio(): HTMLAudioElement {
  * If fetch already completed, resolves immediately.
  */
 function ensureAudioReady(audioUrl: string): Promise<string> {
-    if (sharedState.blobUrl) { console.log('[music-cover] audio already fetched'); return Promise.resolve(sharedState.blobUrl); }
+    if (sharedState.blobUrl) return Promise.resolve(sharedState.blobUrl);
 
     if (!sharedFetchPromise) {
         sharedFetchPromise = fetchAndExtract(audioUrl);
@@ -104,7 +89,6 @@ function ensureAudioReady(audioUrl: string): Promise<string> {
         if (coverDataUrl && !sharedState.coverDataUrl) {
             sharedState.coverDataUrl = coverDataUrl;
         }
-        console.log('[music-cover] ensureAudioReady done, coverDataUrl:', sharedState.coverDataUrl ? `set (${sharedState.coverDataUrl.length} chars)` : 'EMPTY');
         return blobUrl;
     });
 }
@@ -251,29 +235,23 @@ function bindInstance(el: HTMLElement) {
     // Cover extraction — apply static cover immediately; ID3 cover applied after fetch
     let coverApplied = false;
     function applyCover(dataUrl: string) {
-        console.log('[music-cover] applyCover called, coverApplied:', coverApplied, 'dataUrl:', dataUrl ? `${dataUrl.substring(0, 40)}... (${dataUrl.length} chars)` : 'EMPTY');
         if (!dataUrl || coverApplied) return;
         coverApplied = true;
         const img = document.createElement('img');
         img.alt = 'Album cover';
         img.onload = () => {
-            console.log('[music-cover] cover image loaded, prepending to DOM');
             coverEl.prepend(img);
             requestAnimationFrame(() => img.classList.add('loaded'));
             placeholder.style.display = 'none';
         };
-        img.onerror = (e) => { console.warn('[music-cover] cover image FAILED to load:', e); };
+        img.onerror = () => {};
         img.src = dataUrl;
     }
 
     if (coverUrl) {
-        console.log('[music-cover] bindInstance: applying static coverUrl');
         applyCover(coverUrl);
     } else if (sharedState.coverDataUrl) {
-        console.log('[music-cover] bindInstance: applying sharedState.coverDataUrl');
         applyCover(sharedState.coverDataUrl);
-    } else {
-        console.log('[music-cover] bindInstance: no cover available yet, will extract on playback');
     }
     // Register applyCover on element for cross-instance cover broadcast
     (el as any).__applyCover = applyCover;
