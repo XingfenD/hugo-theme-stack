@@ -12,6 +12,7 @@ import { setupScrollspy } from './scrollspy';
 import { setupSmoothAnchors } from './smoothAnchors';
 import { setupPaginationJump } from './pagination';
 import { setupCodeCopy } from './code-copy';
+import { setupFullscreenReading } from './fullscreen-reading';
 
 /**
  * Scroll reveal animation — fade in article content elements as they enter the viewport
@@ -177,6 +178,7 @@ let Stack = {
         window.addEventListener('mermaid:wrapped', setupScrollReveal);
         setupPasswordGate();
         setupCodeBlockLang();
+        setupFullscreenReading();
 
         new StackColorScheme(document.getElementById('dark-mode-toggle')!);
     }
