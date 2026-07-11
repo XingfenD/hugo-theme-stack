@@ -174,9 +174,18 @@ body.fullscreen-reading {
         box-shadow: none;
     }
 
-    // Ensure article content is readable
+    // Ensure article content is readable (keep padding for heading borders)
     .article-content {
-        padding: 0;
+        padding: 0 var(--card-padding);
+    }
+
+    // Compensate article-content padding for bottom sections
+    .collection-nav,
+    .related-content,
+    .article-comments,
+    .article-footer {
+        padding-left: var(--card-padding);
+        padding-right: var(--card-padding);
     }
 
     // Keep back-to-top button visible
