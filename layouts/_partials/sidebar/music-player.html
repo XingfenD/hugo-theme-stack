@@ -5,29 +5,9 @@
 {{- $artist := .artist | default "Unknown" -}}
 {{- $cover := .cover | default "" -}}
 
-{{- /* Resolve page bundle resources; use relURL for static files */ -}}
-{{- $basePath := (urls.Parse $.Context.Site.BaseURL).Path -}}
-{{- if $url -}}
-  {{- if not (hasPrefix $url "http") -}}
-    {{- $resource := $.Context.Resources.GetMatch $url -}}
-    {{- if $resource -}}
-      {{- $url = $resource.RelPermalink -}}
-    {{- else -}}
-      {{- $url = path.Join $basePath (strings.TrimPrefix "/" $url) -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-{{- if $cover -}}
-  {{- if not (hasPrefix $cover "http") -}}
-    {{- $coverResource := $.Context.Resources.GetMatch $cover -}}
-    {{- if $coverResource -}}
-      {{- $cover = $coverResource.RelPermalink -}}
-    {{- else -}}
-      {{- $cover = path.Join $basePath (strings.TrimPrefix "/" $cover) -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- /* Resolve page bundle resources; use site base path for static files */ -}}
+{{- if $url -}}{{- $url = partial "resolve-resource-link" (dict "ctx" $.Context "value" $url) -}}{{- end -}}
+{{- if $cover -}}{{- $cover = partial "resolve-resource-link" (dict "ctx" $.Context "value" $cover) -}}{{- end -}}
 
 <section class="widget sidebar-music-player" data-audio-url="{{ $url }}" data-cover-url="{{ $cover }}">
     <div class="widget-icon">
