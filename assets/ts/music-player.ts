@@ -10,54 +10,7 @@
  * with a large download on initial load.
  */
 
-function fetchAndExtract(audioUrl: string): Promise<{ blobUrl: string; coverDataUrl: string }> {
-    return fetch(audioUrl)
-        .then(r => r.arrayBuffer())
-        .then(buffer => {
-            const blobUrl = URL.createObjectURL(new Blob([buffer]));
-            return extractCoverFromBuffer(buffer).then(coverDataUrl => ({ blobUrl, coverDataUrl }));
-        })
-        .catch(() => ({ blobUrl: audioUrl, coverDataUrl: '' }));
-}
-
-function waitForJsmediatags(timeout = 5000): Promise<boolean> {
-    if (typeof (window as any).jsmediatags !== 'undefined') {
-        return Promise.resolve(true);
-    }
-    return new Promise((resolve) => {
-        const deadline = Date.now() + timeout;
-        const poll = () => {
-            if (typeof (window as any).jsmediatags !== 'undefined') {
-                return resolve(true);
-            }
-            if (Date.now() > deadline) {
-                return resolve(false);
-            }
-            setTimeout(poll, 100);
-        };
-        poll();
-    });
-}
-
-function extractCoverFromBuffer(buffer: ArrayBuffer): Promise<string> {
-    return waitForJsmediatags().then((ready) => {
-        if (!ready) return '';
-        return new Promise<string>((resolve) => {
-            (window as any).jsmediatags.read(new Blob([buffer]), {
-                onSuccess: (tag: any) => {
-                    const pic = tag.tags?.picture;
-                    if (!pic) { resolve(''); return; }
-                    let base64 = '';
-                    for (let i = 0; i < pic.data.length; i++) {
-                        base64 += String.fromCharCode(pic.data[i]);
-                    }
-                    resolve(`data:${pic.format};base64,${btoa(base64)}`);
-                },
-                onError: () => resolve('')
-            });
-        });
-    });
-}
+import { fetchAndExtract } from './media';
 
 // --- Shared singleton state ---
 let sharedAudio: HTMLAudioElement | null = null;

@@ -1,22 +1,30 @@
 /**
  * Slide up/down
  * Code from https://dev.to/bmsvieira/vanilla-js-slidedown-up-4dkn
- * @param target 
- * @param duration 
+ * @param target
+ * @param duration
  */
-let slideUp = (target: HTMLElement, duration = 500) => {
-    target.classList.add('transiting');
-    target.style.transitionProperty = 'height, margin, padding';
-    target.style.transitionDuration = duration + 'ms';
-    ///target.style.boxSizing = 'border-box';
-    target.style.height = target.offsetHeight + 'px';
-    target.offsetHeight;
+const zeroOuterSpacing = (target: HTMLElement): void => {
     target.style.overflow = 'hidden';
     target.style.height = "0";
     target.style.paddingTop = "0";
     target.style.paddingBottom = "0";
     target.style.marginTop = "0";
     target.style.marginBottom = "0";
+};
+
+const setTransition = (target: HTMLElement, duration: number): void => {
+    target.style.transitionProperty = 'height, margin, padding';
+    target.style.transitionDuration = duration + 'ms';
+};
+
+let slideUp = (target: HTMLElement, duration = 500) => {
+    target.classList.add('transiting');
+    setTransition(target, duration);
+    ///target.style.boxSizing = 'border-box';
+    target.style.height = target.offsetHeight + 'px';
+    target.offsetHeight;
+    zeroOuterSpacing(target);
     window.setTimeout(() => {
         target.classList.remove('show')
         target.style.removeProperty('height');
@@ -38,16 +46,10 @@ let slideDown = (target: HTMLElement, duration = 500) => {
     target.classList.add('show');
 
     let height = target.offsetHeight;
-    target.style.overflow = 'hidden';
-    target.style.height = "0";
-    target.style.paddingTop = "0";
-    target.style.paddingBottom = "0";
-    target.style.marginTop = "0";
-    target.style.marginBottom = "0";
+    zeroOuterSpacing(target);
     target.offsetHeight;
     ///target.style.boxSizing = 'border-box';
-    target.style.transitionProperty = "height, margin, padding";
-    target.style.transitionDuration = duration + 'ms';
+    setTransition(target, duration);
     target.style.height = height + 'px';
     target.style.removeProperty('padding-top');
     target.style.removeProperty('padding-bottom');

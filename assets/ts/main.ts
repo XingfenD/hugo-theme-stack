@@ -13,6 +13,7 @@ import { setupSmoothAnchors } from './smoothAnchors';
 import { setupPaginationJump } from './pagination';
 import { setupCodeCopy } from './code-copy';
 import { setupFullscreenReading } from './fullscreen-reading';
+import { setupAPlayer } from './aplayer';
 
 /**
  * Scroll reveal animation — fade in article content elements as they enter the viewport
@@ -179,6 +180,7 @@ let Stack = {
         setupPasswordGate();
         setupCodeBlockLang();
         setupFullscreenReading();
+        setupAPlayer();
 
         new StackColorScheme(document.getElementById('dark-mode-toggle')!);
     }
