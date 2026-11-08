@@ -1,0 +1,22 @@
+{{- /*
+  Resolve a media reference to a hosted URL.
+
+  Usage: {{ $url = partial "resolve-resource-link" (dict "ctx" $page "value" $url) }}
+
+  Resolution order:
+  1. Non-remote value matching a page-bundle resource → resource RelPermalink
+  2. Other non-remote values → path.Join of the site base path (static files under baseURL subpaths)
+  3. Remote URLs (http/https) → returned unchanged
+*/ -}}
+{{- $page := .ctx -}}
+{{- $value := .value -}}
+{{- if not (hasPrefix $value "http") -}}
+    {{- $resource := $page.Resources.GetMatch $value -}}
+    {{- if $resource -}}
+        {{- $resource.RelPermalink -}}
+    {{- else -}}
+        {{- path.Join (urls.Parse $page.Site.BaseURL).Path (strings.TrimPrefix "/" $value) -}}
+    {{- end -}}
+{{- else -}}
+    {{- $value -}}
+{{- end -}}

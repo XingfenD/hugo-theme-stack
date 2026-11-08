@@ -1,5 +1,27 @@
 /* ===== Custom styles ported from stack-xf ===== */
 
+/* APlayer container shared styles (moved from the former inline <style> in shortcodes/aplayer.html) */
+.aplayer-container {
+    margin: 1rem 0;
+}
+.aplayer-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    border-radius: var(--card-border-radius, 8px);
+    background: var(--card-background, #fff);
+    color: var(--card-text-color-secondary, #666);
+    font-size: 1.3rem;
+}
+.aplayer-loading-spinner {
+    animation: aplayer-spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+@keyframes aplayer-spin {
+    to { transform: rotate(360deg); }
+}
+
 /* APlayer dark mode overrides */
 [data-scheme="dark"] .aplayer {
     background: var(--card-background);
