@@ -5,9 +5,9 @@
 {{- $artist := .artist | default "Unknown" -}}
 {{- $cover := .cover | default "" -}}
 
-{{- /* Resolve page bundle resources; use site base path for static files */ -}}
-{{- if $url -}}{{- $url = partial "resolve-resource-link" (dict "ctx" $.Context "value" $url) -}}{{- end -}}
-{{- if $cover -}}{{- $cover = partial "resolve-resource-link" (dict "ctx" $.Context "value" $cover) -}}{{- end -}}
+{{- /* Resolve static paths against the site base path */ -}}
+{{- if $url -}}{{- $url = partial "resolve-resource-link" (dict "value" $url) -}}{{- end -}}
+{{- if $cover -}}{{- $cover = partial "resolve-resource-link" (dict "value" $cover) -}}{{- end -}}
 
 <section class="widget sidebar-music-player" data-audio-url="{{ $url }}" data-cover-url="{{ $cover }}">
     <div class="widget-icon">
